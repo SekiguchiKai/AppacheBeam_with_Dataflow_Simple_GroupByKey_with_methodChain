@@ -1,12 +1,10 @@
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
-import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.GroupByKey;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.values.KV;
-import org.apache.beam.sdk.values.PCollection;
 
 
 /**
@@ -66,8 +64,11 @@ public class Main {
         Pipeline pipeline = Pipeline.create(PipelineOptionsFactory.create());
 
         // メソッドチェーンを使った書き方
-        pipeline.apply(TextIO.read().from(INPUT_FILE_PATH)).apply(ParDo.of(new SplitWordsAndMakeKVFn())).apply(
-                GroupByKey.<String, Integer>create()).apply(ParDo.of(new TransTypeFromKVAndMakeStringFn())).apply(TextIO.write().to(OUTPUT_FILE_PATH));
+        pipeline.apply(TextIO.read().from(INPUT_FILE_PATH))
+                .apply(ParDo.of(new SplitWordsAndMakeKVFn()))
+                .apply(GroupByKey.<String, Integer>create())
+                .apply(ParDo.of(new TransTypeFromKVAndMakeStringFn()))
+                .apply(TextIO.write().to(OUTPUT_FILE_PATH));
 
         // run : PipeLine optionで指定したRunnerで実行
         // waitUntilFinish : PipeLineが終了するまで待って、最終的な状態を返す
